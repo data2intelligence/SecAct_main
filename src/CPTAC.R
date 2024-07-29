@@ -1,9 +1,6 @@
-
-
-# CPTAC
-dataPath <- "/data/rub2/data/CPTAC/"
 cancers <- c("BRCA", "COAD", "GBM", "HNSC", "KIRC", "LUAD", "LUSC", "OV", "PDAC", "UCEC")
 
+dataPath <- "/data/rub2/data/CPTAC/"
 geneAnno <- read.csv(paste0(dataPath,"Proteome_BCM_GENCODE_v34_harmonized_v1/README/Gene_annotation_and_representable_isoform_mapping_table.txt"),sep="\t",check.names=F)
 geneAnno[geneAnno[,1]=="ENSG00000284024.2",4] <- "MSANTD7"
 

@@ -1,4 +1,34 @@
-
+cancers <- c(
+"Breast.GSE114725.InDrop",
+"Breast.GSE156728.10x",
+"Breast.GSE176078.10x",
+"Cholangio.GSE156728.SS2",
+"Colorectal.GSE108989.SS2",
+"Colorectal.GSE146771.10x",
+"Colorectal.GSE146771.SS2",
+"DLBCL.GSE182434.10x",
+"Endometrial.GSE156728.10x",
+"Esophageal.GSE156728.10x",
+"Fallopian.GSE156728.10x",
+"Glioblastoma.GSE131928.SS2",
+"Glioblastoma.GSE163108.10x",
+"Glioblastoma.GSE163108.SS2",
+"Head_Neck.GSE103322.SS2",
+"Liver.GSE125449.10x",
+"Liver.GSE140228.10x",
+"Liver.GSE140228.SS2",
+"Liver.GSE98638.SS2",
+"Lymphoma.GSE156728.10x",
+"Melanoma.GSE115978.SS2",
+"Myeloma.GSE156728.10x",
+"NSCLC.E-MTAB-6149.10x",
+"NSCLC.GSE99254.SS2",
+"Ovarian.GSE156728.10x",
+"Pancreatic.GSE156728.10x",
+"Renal.GSE156728.10x",
+"Renal.Young2018.10x",
+"Thyroid.GSE156728.10x",
+"Uveal.GSE139829.10x")
 
 for(cancer in cancers)
 {
