@@ -1,0 +1,20 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# Reproduction for SecAct paper
+
+These are scripts for generating the signaling signatures of secreted
+proteins, evaluating their prediction accuracy, and demonstrating the
+downstream applications of [SecAct](https://github.com/data2intelligence/SecAct){target="_blank"}.
