@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Reproduction for SecAct paper
+# Reproduce the SecAct paper
 
 These are scripts for generating the signaling signatures of secreted
 proteins, evaluating their prediction accuracy, and demonstrating the
@@ -31,31 +31,31 @@ downstream applications of [SecAct](https://github.com/data2intelligence/SecAct)
 ## 2 Model validation
 Validation using in vivo data from secreted protein blockades
 
-## 2.1 Anti-Netrin-1 compound
+## 2.1 Anti-Netrin-1 therapy
 ```
 swarm --verbose 1 Secretome_s5_validation_1_NTN1_1_activity.swarm
 Rscript Secretome_s5_validation_1_NTN1_2_summary.R
 ```
 
-## 2.2 Cytokine blakade
+## 2.2 Cytokine-blocking treaement
 ``` 
 swarm --verbose 1 Secretome_s5_validation_2_blocking_1_activity.swarm
 Rscript Secretome_s5_validation_2_blocking_2_summary.R
 ```
 
-## 2.3 Anti-VEGF antibody
+## 2.3 Anti-VEGF therapy
 ``` 
 swarm --verbose 1 Secretome_s5_validation_3_VEGF_1_activity.swarm
 Rscript Secretome_s5_validation_3_VEGF_2_summary.R
 ```
 
-## 2.4 Pathway and proteomics in CPTAC
+## 2.4 Pathway and proteomics in CPTAC patient cohorts
 ``` 
 swarm --verbose 1 Secretome_s5_validation_4_CPTAC_1_activity.R
 Rscript Secretome_s5_validation_4_CPTAC_2_summary.R
 ```
 
-## 2.5 Pathway and proteomics in ProCan-DepMapSanger
+## 2.5 Pathway and proteomics in DepMap cell-line data
 ``` 
 swarm --verbose 1 Secretome_s5_validation_5_ProCan-DepMapSanger_1_activity.swarm
 Rscript Secretome_s5_validation_5_ProCan-DepMapSanger_2_summary.R
