@@ -25,11 +25,11 @@ Creation of secreted protein signatures.
 
     swarm --verbose 1 Secretome_s2_coexpr_1_separate.swarm
 
-#### 1.4 Gating
+#### 1.4 Intracellular background gating
 
     swarm --verbose 1 Secretome_s3_QC_1_gating.swarm
 
-#### 1.5 Summary
+#### 1.5 Quality control summary
 
     Rscript Secretome_s3_QC_2_validate_summary.R
 
@@ -42,14 +42,14 @@ Creation of secreted protein signatures.
     swarm --verbose 1 Secretome_s4_comb_2_composite_signature.swarm
     Rscript Secretome_s4_comb_2_composite_signature_summary.R
 
-#### 1.8 Find the optial lambda
+#### 1.8 Find the optimal lambda
 
     swarm --verbose 1 Secretome_s4_model_1_explore_lambda.swarm
     Rscript Secretome_s4_model_2_explore_lambda_summary.R
 
 ## 2. Model validation
 
-Validation using clinical data.
+Validation using various data sets.
 
 #### 2.1 Anti-Netrin-1 therapy
 
@@ -84,7 +84,36 @@ Validation using clinical data.
 
 ## 3. Downstream application
 
-SecAct could be to three categories of input data: spatial
-transcriptomics with multicellular or single-cell resolutions,
-single-cell RNA-seq, and bulk transcriptomics.
+SecAct could be to spatial, single-cell, and bulk transcriptomics data.
 
+#### 3.1 HCC Visium
+
+    Rscript Secretome_s6_application_1_ST_1_visium.R
+
+#### 3.2 HCC CosMx
+
+    Rscript Secretome_s6_application_1_ST_2_cosmx.R
+
+#### 3.3 OV metastasis
+
+    Rscript Secretome_s6_application_2_SC_1_twoCondtion.R
+
+#### 3.4 Pancancer
+
+    Rscript Secretome_s6_application_2_SC_2_oneCondition.R
+
+#### 3.5 Immunotherapy
+
+    swarm --verbose 1 Secretome_s6_application_3_bulk_1_immunotherapy_1_activity.swarm
+    Rscript Secretome_s6_application_3_bulk_1_immunotherapy_2_summary.R
+
+#### 3.6 LY86 wet-lab
+
+    Rscript Secretome_s6_application_3_bulk_2_LY86_RNAseq.R
+
+## Citation
+
+Beibei Ru, Lanqi Gong, Emily Yang, Seongyong Park, George Zaki, Kenneth
+Aldape, Lalage Wakefield, Peng Jiang. Inference of secreted protein
+activities in intercellular communication.
+\[<a href="https://github.com/data2intelligence/SecAct" target="_blank">Link</a>\]
