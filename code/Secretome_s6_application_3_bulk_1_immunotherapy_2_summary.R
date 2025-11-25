@@ -4,6 +4,7 @@ source("Secretome_s0_path.R")
 inputPath <- paste0(dataAppPath,"Immunotherapy/")
 outputPath <- paste0(applicationPath,"Immunotherapy/")
 
+rename <- read.csv(paste0(dataAppPath,"cohort_rename.txt"),header=T,sep="\t")
 
 
 allFiles <- list.files(inputPath)
@@ -112,7 +113,6 @@ datasets
 ###########################
 ### sample count
 ###########################
-rename <- read.csv(paste0(inputPath,"cohort_rename.txt"),header=T,sep="\t")
 
 ctype_vec <- c()
 patient_count <- c()
@@ -605,8 +605,6 @@ write.csv(fg.df, paste0(outputPath,"prediction_LY86_NFKB_cor.csv"), quote=FALSE)
 
 
 
-
-
 ##############################
 # risk score water fall plot
 ##############################
@@ -674,11 +672,12 @@ p1 <- ggplot(fg.df,aes(x=gene,y=value)) +
 		axis.title = element_text(colour = "black"),
 		axis.text = element_text(colour = "black"),
 		axis.title.x = element_blank(),
-		axis.ticks = element_blank(),
+		axis.ticks.x = element_blank(),
 		legend.position="none"
 	)
 	
 ggsave(paste0(outputPath,"prediction_",gene,"_box.pdf"), p1, width = 3.3, height = 5, dpi=400, units = "cm")
+write.csv(fg.df, paste0(outputPath,"prediction_",gene,"_box.csv"), quote=FALSE)
 
 
 
@@ -722,10 +721,7 @@ p1 <- ggplot(fg.df,aes(x=X1,y=value)) +
 	)
 	
 ggsave(paste0(outputPath,"prediction_GZMA_IL11.pdf"), p1, width = 5.5, height = 4.8, dpi=500, units = "cm")
-
-
-smy_t <- t(smy[c(genes,"LY86"),])
-smy_t[order(smy_t[,3]),]
+write.csv(t(smy[genes,]), paste0(outputPath,"prediction_GZMA_IL11.csv"), quote=FALSE)
 
 
 
@@ -791,6 +787,9 @@ for(n in 1:nrow(gene_dataset))
 	Y_olp <- data[olp,,drop=F]
 	
 	comb <- cbind(X_olp, Act=Y_olp[,gene])
+	comb <- cbind(comb, group=Y_olp[,gene]>cutoff)
+	write.csv(comb,paste0(outputPath,gene,"_",dataset,".csv"),quote=FALSE)
+
 
 	coxmodel_fit <- coxph(Surv(OS, OS.Event) ~ ., data = comb)
 	coxmodel_obj <- summary(coxmodel_fit)
@@ -900,6 +899,7 @@ p1 <- ggplot(fg.df, aes(x=group, y=Count, fill=mod)) +
 	)
 
 ggsave(paste0(outputPath,"prediction_act_exp_count_compare.pdf"), p1, width = 5.3, height = 4.8, units = "cm")
+write.csv(fg.df, paste0(outputPath,"prediction_act_exp_count_compare.csv"),quote=F)
 
 
 
@@ -1131,7 +1131,7 @@ for(i in c("act","exp"))
 
 smy <- smy[c(1,4,2,5,3,6),]
 
-write.csv(smy, paste0(outputPath,"performance_compare_act_exp.csv"))
+write.csv(smy, paste0(outputPath,"performance_compare_act_exp.csv"),quote=FALSE)
 
 
 fg.df <- data.frame(
@@ -1164,6 +1164,7 @@ p0 <- ggplot(fg.df, aes(x=group, y=Value, fill=mod)) +
 	)
 	
 ggsave(paste0(outputPath,"prediction_act_exp_accuracy_compare.png"), p0, width = 5.3, height = 7, dpi=400, units = "cm")
+write.csv(fg.df, paste0(outputPath,"prediction_act_exp_accuracy_compare.csv"),quote=FALSE)
 
 
 
@@ -1196,6 +1197,9 @@ olp <- intersect(genes_act,genes_exp)
 #olp <- sorted.by.act.exp[sorted.by.act.exp%in%olp]
 olp_neg <- intersect(olp,genes_act_neg)
 
+
+write.csv(smy1[olp,], paste0(outputPath,"prediction_together_heatmap_comb_act.csv"),quote=FALSE)
+write.csv(smy2[olp,], paste0(outputPath,"prediction_together_heatmap_comb_exp.csv"),quote=FALSE)
 
 
 
@@ -1512,130 +1516,6 @@ ggsave(paste0(outputPath,"prediction_together_heatmap_comb.png"), p_comb, width 
 
 
 
-smy_test1 <- read.csv(paste0(outputPath,"prediction_act_genomeWide_test.csv"),row.names=1,header=T)
-smy_test2 <- read.csv(paste0(outputPath,"prediction_exp_genomeWide_test.csv"),row.names=1,header=T)
-
-olp <- intersect(rownames(smy_test1),rownames(smy_test2))
-
-fg.df <- data.frame(Act=smy_test1[olp,1],Exp=smy_test2[olp,1])
-rownames(fg.df) <- olp
-
-maxmax <- max(fg.df)
-minmin <- min(fg.df)
-
-library(ggplot2)
-p1 <- ggplot(fg.df, aes(x = Exp, y = Act, label = rownames(fg.df)))+
-	geom_hline(yintercept=0, color = "darkgrey", linewidth=0.6)+
-	geom_vline(xintercept=0, color = "darkgrey", linewidth=0.6)+
-	xlim(minmin,maxmax)+
-	ylim(minmin,maxmax)+
-	geom_text()+
-	coord_equal()+
-	theme_bw()+ 
-	theme(
-	  panel.grid = element_blank(),
-	  panel.background = element_blank(),
-	  axis.text = element_text(size=10,colour = "black"),
-	  axis.title = element_text(size=10,colour = "black"),
-	  legend.position="none"
-	)
-
-ggsave(paste0(outputPath,"prediction_together_scatter.png"), p1, width = 50, height = 50, dpi=200, units = "cm",limitsize = FALSE)
-
-
-
-
-smy_test1 <- read.csv(paste0(outputPath,"prediction_act_genomeWide_test.csv"),row.names=1,header=T)
-smy_test2 <- read.csv(paste0(outputPath,"prediction_exp_genomeWide_test.csv"),row.names=1,header=T)
-
-smy_test1 <- smy_test1[rev(rownames(smy_test1)),]
-
-genes1 <- rownames(smy_test1)[smy_test1[,"is.signif"]==1]
-genes2 <- rownames(smy_test2)[smy_test2[,"is.signif"]==1]
-
-fg.df <- data.frame(Act=smy_test1[genes1,1],Exp=smy_test2[genes1,1])
-rownames(fg.df) <- genes1
-
-fg.df <- cbind(fg.df, group=NA)
-
-neg_max <- max(fg.df[fg.df[,1]<0,1])
-pos_min <- min(fg.df[fg.df[,1]>0,1])
-
-fg.df[,"group"] <-  fg.df[,1] > pos_min & fg.df[,2] > pos_min | fg.df[,1]< neg_max & fg.df[,2]< neg_max
-
-
-library(ggplot2)
-p1 <- ggplot(fg.df, aes(x = Exp, y = Act, label = rownames(fg.df)))+
-	geom_hline(yintercept=0, color = "darkgrey", linewidth=0.6)+
-	geom_vline(xintercept=0, color = "darkgrey", linewidth=0.6)+
-	geom_hline(yintercept=pos_min, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_hline(yintercept=neg_max, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_vline(xintercept=pos_min, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_vline(xintercept=neg_max, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_text(aes(colour=group))+
-	coord_equal()+
-	theme_bw()+ 
-	theme(
-	  panel.grid = element_blank(),
-	  panel.background = element_blank(),
-	  axis.text = element_text(size=10,colour = "black"),
-	  axis.title = element_text(size=10,colour = "black"),
-	  legend.position="none"
-	)
-
-ggsave(paste0(outputPath,"prediction_together_scatter2.png"), p1, width = 50, height = 50, dpi=200, units = "cm",limitsize = FALSE)
-
-
-
-
-
-
-smy_test1 <- read.csv(paste0(outputPath,"prediction_act_genomeWide_test.csv"),row.names=1,header=T)
-smy_test2 <- read.csv(paste0(outputPath,"prediction_exp_genomeWide_test.csv"),row.names=1,header=T)
-
-smy_test1 <- smy_test1[rev(rownames(smy_test1)),]
-
-genes1 <- rownames(smy_test1)[smy_test1[,"is.signif"]==1]
-genes1 <- rownames(smy_test2)[smy_test2[,"is.signif"]==1]
-
-fg.df <- data.frame(Act=smy_test1[genes1,1],Exp=smy_test2[genes1,1])
-rownames(fg.df) <- genes1
-
-fg.df <- cbind(fg.df, group=NA)
-
-neg_max <- max(fg.df[fg.df[,1]<0,1])
-pos_min <- min(fg.df[fg.df[,1]>0,1])
-
-fg.df[,"group"] <-  fg.df[,1] > pos_min & fg.df[,2] > pos_min | fg.df[,1]< neg_max & fg.df[,2]< neg_max
-
-
-library(ggplot2)
-p1 <- ggplot(fg.df, aes(x = Exp, y = Act, label = rownames(fg.df)))+
-	geom_hline(yintercept=0, color = "darkgrey", linewidth=0.6)+
-	geom_vline(xintercept=0, color = "darkgrey", linewidth=0.6)+
-	geom_hline(yintercept=pos_min, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_hline(yintercept=neg_max, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_vline(xintercept=pos_min, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_vline(xintercept=neg_max, color = "grey", linewidth=0.6, linetype="dashed")+
-	geom_text(aes(colour=group))+
-	coord_equal()+
-	theme_bw()+ 
-	theme(
-	  panel.grid = element_blank(),
-	  panel.background = element_blank(),
-	  axis.text = element_text(size=10,colour = "black"),
-	  axis.title = element_text(size=10,colour = "black"),
-	  legend.position="none"
-	)
-
-ggsave(paste0(outputPath,"prediction_together_scatter3.png"), p1, width = 50, height = 50, dpi=200, units = "cm",limitsize = FALSE)
-
-
-
-
-
-
-
 ###################################################
 # compare SP activity from genome-wide and targeted
 ###################################################
@@ -1690,6 +1570,7 @@ p1 <- ggplot(fg.df,aes(x=x, y=y, color=group)) +
 		legend.key.size = unit(0.7, 'lines')
 	)			
 ggsave(paste0(outputPath,"prediction_genome_targeted_compare.pdf"), p1, width = 6, height = 7, dpi=400, units = "cm")
+write.csv(fg.df, paste0(outputPath,"prediction_genome_targeted_compare.csv"),quote=FALSE)
 
 
 
@@ -1729,4 +1610,5 @@ p1 <- ggplot(fg.df, aes(x=Var1, y=value, fill=Var2)) +
 		legend.title=element_blank()
 	)
 ggsave(paste0(outputPath,"Targeted_gene_count.pdf"), p1, width = 7, height = 10, dpi=500, units = "cm", limitsize =FALSE)
+write.csv(fg.df, paste0(outputPath,"Targeted_gene_count.csv"),quote=FALSE)
 

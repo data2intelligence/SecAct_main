@@ -1,8 +1,9 @@
-source("../../SpaCE/code/ifun.R")
+source("Secretome_s0_path.R")
 
-dataPath <- "/data/rub2/project/Secretome/results/LY86_RNAseq/"
+inputPath <- paste0(dataAppPath, "LY86_RNAseq/")
+outputPath <- paste0(applicationPath,"LY86_RNAseq/")
 
-TPM <- read.csv(gzfile("/data/rub2/project/Secretome/results/LY86_RNAseq/RSEM.TPM.processed.gz"),sep="\t")
+TPM <- read.csv(gzfile(paste0(inputPath,"GSE291028_RSEM.TPM.processed.gz")),sep="\t")
 TPM <- TPM[,sort(colnames(TPM))]
 
 
@@ -16,16 +17,13 @@ expr[rownames(TPM),"Vec_1"] <- rowMeans(TPM[,c("Vector_1_1","Vector_1_2")])
 expr[rownames(TPM),"Vec_2"] <- rowMeans(TPM[,c("Vector_2_1","Vector_2_2")])
 expr[rownames(TPM),"Vec_3"] <- TPM[,c("Vector_3_1")]
 
-
-
+expr <- expr[rowSums(expr)>1,]
 
 
 
 ############
 # QC
 ############
-
-
 
 logCPMs <- expr
 
@@ -68,7 +66,7 @@ p <- ggplot(to_plot, aes(x=PC1, y=PC2, color=batch)) +
 	  axis.text = element_text(colour = "black"),
 	  axis.title = element_text(colour = "black")
 	)	
-ggsave("/data/rub2/project/Secretome/results/LY86_RNAseq/RNAseq_pca.pdf", p, width =8.5, height =6, units = "cm")
+ggsave(paste0(outputPath,"RNAseq_pca.pdf"), p, width =8.5, height =6, units = "cm")
 
 
 pv <- wilcox.test(unlist(expr["Ly86",1:4]),unlist(expr["Ly86",5:7]), "greater")$p.value
@@ -84,10 +82,8 @@ p1 <- ggplot(to_plot,aes(x=batch, y=Ly86_expr, group=batch, color=batch))+
 		legend.position = "right"
 	)
 
-ggsave("/data/rub2/project/Secretome/results/LY86_RNAseq/RNAseq_Ly86.pdf", p1, width =7.4, height =5.5, units = "cm")
-
-
-
+ggsave(paste0(outputPath,"RNAseq_Ly86.pdf"), p1, width =7.4, height =5.5, units = "cm")
+write.csv(to_plot,paste0(outputPath,"RNAseq_Ly86.csv"), quote=FALSE)
 
 
 
@@ -104,7 +100,7 @@ expr.diff <- rowMeans(expr.treatment) - rowMeans(expr.control)
 expr.diff <- as.matrix(expr.diff, ncol=1)
 colnames(expr.diff) <- "Diff"
 
-write.table(expr.diff, "/data/rub2/project/Secretome/results/LY86_RNAseq/Ly86.overexpression_vs_Vector.diff",  quote=F)
+write.table(expr.diff, paste0(outputPath,"Ly86.overexpression_vs_Vector.diff"),  quote=F)
 
 library(SecAct)
 # Run against to differential profile
@@ -114,21 +110,6 @@ res <- SecAct.activity.inference(
 )
 
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
  
 ############
@@ -146,6 +127,7 @@ fit2 <- eBayes(fit2)
 res <- topTable(fit2,coef=1,number=nrow(expr))
 res <- res[order(res[,"t"],decreasing=T),]
 
+write.csv(res,paste0(outputPath,"limma_res.csv"), quote=FALSE)
 
 
 
@@ -160,8 +142,8 @@ rnk <- rnk[!names(rnk)%in%c("humanGeneNotExist","humanGeneMultiple")]
 
 
 library(fgsea)
+library(SpaCET)
 
-data_MSigDB_path <- "/data/rub2/data/MSigDB/"
 gmtNames <- list.files(data_MSigDB_path)	
 
 for(gmtName in gmtNames)
@@ -173,7 +155,7 @@ for(gmtName in gmtNames)
 	fgseaRes <- fgsea(pathways = gmt, stats = rnk, nperm=1000)
 	fgseaRes <- fgseaRes[order(fgseaRes[,5],decreasing=T),]
 	
-	write.csv(as.matrix(fgseaRes[,1:7]),paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/",gmtName,".csv"), quote=F)
+	write.csv(as.matrix(fgseaRes[,1:7]),paste0(outputPath,gmtName,".csv"), quote=F)
 }
 
 
@@ -215,7 +197,7 @@ for(i in 1:2)
 			axis.line.y.left = element_line(color = 'black')
 	)
 	
-	ggsave(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/GSEA_",gsNames[i],".pdf"), p1, width = 8.2, height = 6, units = "cm")
+	ggsave(paste0(outputPath,"GSEA_",gsNames[i],".pdf"), p1, width = 8.2, height = 6, units = "cm")
 	
 }
 	
@@ -228,6 +210,7 @@ p1 <- c(
 	"HALLMARK_INTERFERON_ALPHA_RESPONSE",
 	"HALLMARK_INTERFERON_GAMMA_RESPONSE",
 	"HALLMARK_TNFA_SIGNALING_VIA_NFKB",
+	"HALLMARK_MTORC1_SIGNALING",
 	"HALLMARK_MYC_TARGETS_V1",
 	"HALLMARK_E2F_TARGETS",
 	"HALLMARK_G2M_CHECKPOINT")
@@ -238,7 +221,6 @@ p2 <- c(
 	"GOBP_ANTIGEN_PROCESSING_AND_PRESENTATION",
 	"GOBP_RIBOSOME_BIOGENESIS",
 	"GOBP_DNA_REPLICATION",
-	"GOBP_CELL_CYCLE_CHECKPOINT_SIGNALING",
 	"GOBP_RNA_SPLICING",
 	"GOBP_REGULATION_OF_TRANSLATIONAL_FIDELITY")
 	
@@ -251,9 +233,9 @@ p3 <- c(
 
 fg.df <- data.frame()
 
-fgseaRes1 <- read.csv(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/h.all.v2023.2.Hs.symbols.gmt.csv"),row.names=2)
-fgseaRes2 <- read.csv(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/c5.go.bp.v2023.2.Hs.symbols.gmt.csv"),row.names=2)
-fgseaRes3 <- read.csv(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/c2.cp.kegg_legacy.v2023.2.Hs.symbols.gmt.csv"),row.names=2)
+fgseaRes1 <- read.csv(paste0(outputPath,"h.all.v2023.2.Hs.symbols.gmt.csv"),row.names=2)
+fgseaRes2 <- read.csv(paste0(outputPath,"c5.go.bp.v2023.2.Hs.symbols.gmt.csv"),row.names=2)
+fgseaRes3 <- read.csv(paste0(outputPath,"c2.cp.kegg_legacy.v2023.2.Hs.symbols.gmt.csv"),row.names=2)
 
 fg.df[p1,"NES"] <- fgseaRes1[p1,"NES"]
 fg.df[p2,"NES"] <- fgseaRes2[p2,"NES"]
@@ -279,7 +261,7 @@ rownames(fg.df) <- gsub("Dna","DNA",rownames(fg.df))
 rownames(fg.df) <- gsub("Of","of",rownames(fg.df)) 
 rownames(fg.df) <- gsub("And","&",rownames(fg.df)) 
 rownames(fg.df) <- gsub("Tumor Necrosis Factor","TNF",rownames(fg.df)) 
-
+rownames(fg.df) <- gsub("Mtorc1","mTORC1",rownames(fg.df)) 
 
 
 
@@ -293,7 +275,7 @@ fg.df <- cbind(pw=rownames(fg.df), fg.df)
   fg.df <- cbind(fg.df, hjust=ifelse(fg.vec<0,0,1))
   fg.df[["pw"]] <- factor(fg.df[["pw"]], levels=rownames(fg.df))
 
-  library(ggplot2)
+library(ggplot2)
 p <- ggplot(fg.df, aes(pw, NES, label=pw)) +
     geom_col(aes(fill=dir), width = .88, color = "white", alpha=0.6) +
     geom_text(aes(y = y, hjust=hjust), angle = 0, size = 2.5) +
@@ -316,7 +298,8 @@ p <- ggplot(fg.df, aes(pw, NES, label=pw)) +
     scale_y_continuous(position = "right",limits=c(-3.5,3.5))
 
 
-ggsave(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/GSEA_summary.pdf"), p, width = 9.2, height = 12, units = "cm")
+ggsave(paste0(outputPath,"GSEA_summary.pdf"), p, width = 9.2, height = 12, units = "cm")
+write.csv(fg.df,paste0(outputPath,"GSEA_summary.csv"), quote=F)
 
 
 
@@ -372,7 +355,7 @@ p <- ggplot(fg.df, aes(x = logFC, y = neg_log10_pval, color=density, label=gene)
   	legend.position = "None"
   )
 
-ggsave(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/volcano.png"), p, width = 8.2, height = 6, dpi=300, units = "cm")
+ggsave(paste0(outputPath,"volcano.png"), p, width = 8.2, height = 6, dpi=300, units = "cm")
 
 
 
@@ -393,10 +376,8 @@ ggsave(paste0("/data/rub2/project/Secretome/results/LY86_RNAseq/volcano.png"), p
 
 
 
-
-
-
-
+if(FALSE)
+{
 #################
 # deconvolution #
 #################
@@ -524,3 +505,6 @@ SpaCET_obj <- SpaCET.deconvolution.matched.scRNAseq(
   sc_lineageTree=sc_lineageTree, 
   coreNo=1
 )
+
+
+}

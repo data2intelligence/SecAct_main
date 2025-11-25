@@ -1,10 +1,11 @@
 source("Secretome_s0_path.R")	
-library(SpaCET)
 library(SecAct)
+library(SpaCET)
 
 
-inputPath <- paste0(dataAppPath,"TheranosticHCCSP/")
-outputPath <- paste0(applicationPath,"LIHC/")
+inputPath <- paste0(dataAppPath,"ST_Visium_LIHC/")
+outputPath <- paste0(applicationPath,"ST_LIHC/")
+dir.create(outputPath)
 
 sampleNames <- c("HCC-R1","HCC-R2")
 
@@ -223,7 +224,6 @@ write.csv(fg.df,paste0(outputPath,"/Visium_",sampleName,"_EMT_pattern2.csv"),quo
 
 
 
-
 for(n in 1:3)
 {
 	pattern.gene <- SecAct.signaling.pattern.gene(SpaCET_obj, n)
@@ -265,7 +265,7 @@ parallel::mclapply(sampleNames, runParallel, mc.cores=2)
 
 
 
-hallmark <- read.csv(paste0(inputPath,"hallmark_rename.csv"),header=F,row.names=1)
+hallmark <- read.csv(paste0(data_MSigDB_path,"hallmark_rename.csv"),header=F,row.names=1)
 hallmark[hallmark[,1]=="Epithelial mesenchymal transition",1] <- "EMT"
 hallmark[hallmark[,1]=="Reactive oxygen species pathway",1] <- "Reactive oxygen species"
 

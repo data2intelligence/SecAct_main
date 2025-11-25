@@ -247,6 +247,7 @@ if(FALSE)
 	saveRDS(Seurat_obj, file = paste0(applicationPath,"PanCancer/",cancer,"_Seurat_obj.rds"))
 }
 
+
 if(FALSE)
 {
 	smy <- data.frame()
@@ -369,47 +370,6 @@ if(FALSE)
 	write.csv(avg_exp, paste0(applicationPath,"PanCancer/",cancer,"_cellType_exp.csv"), quote=F)
 	write.csv(avg_act, paste0(applicationPath,"PanCancer/",cancer,"_cellType_act.csv"), quote=F)
 }	
-
-
-if(FALSE)
-{
-	adata <- read_h5ad(paste0(applicationPath,"PanCancer/","PanCancer_igt_s9_fine_counts.h5ad"))
-	aa <- adata$obs
-	table(aa[,"tissue"])
-	table(aa[,"preLesion"])
-	table(aa[,"metastasis"])
-	table(aa[,"tumorPhase"])
-	
-	table(aa[,"recurrence"])
-	table(aa[,"treatment"])
-	table(aa[,"treatmentResponse"])
-	table(aa[,"treatmentPhase"])
-	
-	table(aa[,"sampleType"])
-	table(aa[,"cellSort"])
-	
-	
-	cohort_vec <- as.character(adata$obs[,"cohortName"])
-	cancers <- unique(cohort_vec)
-	
-	y<-c()
-	# Iterate over groups in that column
-	for(cancer in cancers)
-	{
-	  if(cancer=="PLC_PRJCA007744") next
-	  
-	  # Subset and copy to a new AnnDataR6 object
-	  adata_subset <- adata[cohort_vec == cancer, ]
-	 	print(cancer)
-	 	if("Metastasis"%in%unique(adata_subset$obs[,"tissue"])) print(table(adata_subset$obs[,"tissue"]))
-	 	x <- length(table(adata_subset$obs[,"tissue"]))
-	 	y <- c(y,x)
-	 	
-	  # Save to h5ad
-	  #write_h5ad(adata_subset, paste0(applicationPath,"PanCancer/",cancer,".h5ad"))
-	}
-	
-}
 
 
 

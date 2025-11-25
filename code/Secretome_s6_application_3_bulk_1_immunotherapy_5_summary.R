@@ -45,6 +45,8 @@ for(n in n_downsampling)
 					legend.key.size = unit(0.7, 'lines')
 				)			
 			ggsave(paste0(outputPath,"prediction_genome_downsample_compare_",n,".png"), p1, width = 6.2, height = 6.2, dpi=500, units = "cm")
+			write.csv(fg.df, paste0(outputPath,"prediction_genome_downsample_compare_",n,".csv"),quote=FALSE)
+
 		}
 	}
 }
@@ -73,6 +75,7 @@ p1 <- ggplot(fg.df,aes(x=Var2,y=value)) +
 	)
 	
 ggsave(paste0(outputPath,"prediction_genome_downsample_compare_summary.png"), p1, width = 26, height = 6, dpi=500, units = "cm")
+write.csv(stat, paste0(outputPath,"prediction_genome_downsample_compare_summary.csv"),quote=FALSE)
 
 
 

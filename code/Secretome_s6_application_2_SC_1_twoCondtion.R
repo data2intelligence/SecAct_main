@@ -1,13 +1,13 @@
 source("Secretome_s0_path.R")
-
+library(SecAct)
 library(Seurat)
 library(ggplot2)
 library(patchwork)
-library(SecAct)
 
 
-inputPath <- paste0(dataAppPath,"OV/")
-outputPath <- paste0(applicationPath,"OV/")
+inputPath <- paste0(dataAppPath,"scRNAseq_OV/")
+outputPath <- paste0(applicationPath,"scRNAseq_OV/")
+dir.create(outputPath)
 
 Seurat_obj <- readRDS(paste0(inputPath, "OV_scRNAseq_Seurat.rds"))
 
@@ -32,7 +32,7 @@ cellID_cellType <- data.frame(
 )
 cellID_cellType <- cellID_cellType[order(match(cellID_cellType[,"cellType"],names(my_cols))),]
 
-write.csv(cellID_cellType,paste0(outputPath,"/cellType.csv"),quote=F)
+write.csv(cellID_cellType,paste0(outputPath,"cellType.csv"),quote=F)
 
 p1 <- FeaturePlot(Seurat_obj, reduction = "umap", features = c("CLEC9A", "CD1C", "LAMP3", "LGALS2", "LILRA4"), ncol=5)
 ggsave(paste0(outputPath,"OV_marker.png"), p1, width = 60, height = 12, dpi=500, units = "cm")
@@ -84,24 +84,24 @@ Seurat_obj <- SecAct.CCC.scRNAseq(
   padj_cutoff=0.01
 )  
 
-saveRDS(Seurat_obj, file = paste0(outputPath,"/OV_Metastatic_Seurat_obj.rds"))
+saveRDS(Seurat_obj, file = paste0(outputPath,"OV_Metastatic_Seurat_obj.rds"))
 
 
-png(paste0(outputPath,"/OV_heatmap_Metastatic.png"), width = 12, height = 12, res=500, units = "cm")
+png(paste0(outputPath,"OV_heatmap_Metastatic.png"), width = 12, height = 12, res=500, units = "cm")
 
 SecAct.CCC.heatmap(Seurat_obj, row.sorted=TRUE, column.sorted=TRUE, colors_cellType=my_cols)
 
 dev.off()
 
 
-png(paste0(outputPath,"/OV_circlize_Metastatic.png"), width = 9, height = 9, res=500, units = "cm")
+png(paste0(outputPath,"OV_circlize_Metastatic.png"), width = 9, height = 9, res=500, units = "cm")
 
 SecAct.CCC.circle(Seurat_obj, colors_cellType=my_cols)
 
 dev.off()
 
 
-png(paste0(outputPath,"/OV_circlize_tumor_Metastatic.png"), width = 9, height = 9, res=500, units = "cm")
+png(paste0(outputPath,"OV_circlize_tumor_Metastatic.png"), width = 9, height = 9, res=500, units = "cm")
 
 SecAct.CCC.circle(Seurat_obj, colors_cellType=my_cols, receiver="Tumor")
 
@@ -109,10 +109,8 @@ dev.off()
 
 
 
-
 ccc <- Seurat_obj @misc $SecAct_output $SecretedProteinCCC
-write.csv(ccc, paste0(outputPath,"/OV_SecretedProteinCCC.csv"), quote=F)
-ccc <- read.csv(paste0(outputPath,"/OV_SecretedProteinCCC.csv"))
+write.csv(ccc, paste0(outputPath,"OV_SecretedProteinCCC.csv"), quote=F)
 
 
 # download from https://data.broadinstitute.org/gsea-msigdb/msigdb/release/2025.1.Hs/h.all.v2025.1.Hs.symbols.gmt
@@ -140,13 +138,11 @@ selectedSPs <- intersect(selectedSPs, EMT)
 secretedProtein <- sort(unique(c(topSPs, otherSPs, selectedSPs)))
 
 
-
 sender <- unique(ccc_tumor_receiver[,1])
 secretedProtein <- secretedProtein
 receiver <- c("Tumor")
 
 p <- SecAct.CCC.sankey(Seurat_obj, my_cols, sender=sender, secretedProtein=secretedProtein, receiver=receiver)
-ggsave(paste0(outputPath,"/OV_sankey_Tumor.png"), p, width = 25, height = 20, dpi=300, units = "cm")
-ggsave(paste0(outputPath,"/OV_sankey_Tumor.pdf"), p, width = 25, height = 20, dpi=300, units = "cm")
-
+ggsave(paste0(outputPath,"OV_sankey_Tumor.png"), p, width = 25, height = 20, dpi=300, units = "cm")
+ggsave(paste0(outputPath,"OV_sankey_Tumor.pdf"), p, width = 25, height = 20, dpi=300, units = "cm")
 

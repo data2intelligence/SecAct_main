@@ -11,7 +11,7 @@ target="_blank">SecAct</a>.
 
 ## 1. Signature creation
 
-Creation of secreted protein signatures.
+Creation of secreted protein signatures (Fig. 1 and Extended Fig. 1~3).
 
 #### 1.1 Sample
 
@@ -49,7 +49,7 @@ Creation of secreted protein signatures.
 
 ## 2. Model validation
 
-Validation using various data sets.
+Validation using various data sets (Fig. 3 and Extended Fig. 4~5).
 
 #### 2.1 Anti-Netrin-1 therapy
 
@@ -84,7 +84,8 @@ Validation using various data sets.
 
 ## 3. Downstream application
 
-SecAct could be to spatial, single-cell, and bulk transcriptomics data.
+SecAct could be to spatial, single-cell, and bulk transcriptomics data
+(Fig. 4~6 and Extended Fig. 6~10).
 
 #### 3.1 HCC Visium
 
@@ -100,7 +101,9 @@ SecAct could be to spatial, single-cell, and bulk transcriptomics data.
 
 #### 3.4 Pancancer
 
-    Rscript Secretome_s6_application_2_SC_2_oneCondition.R
+    Rscript Secretome_s6_application_2_SC_2_oneCondition_1_split.R
+    swarm --verbose 1 Secretome_s6_application_2_SC_2_oneCondition_2_activity.swarm
+    Rscript Secretome_s6_application_2_SC_2_oneCondition_3_summary.R
 
 #### 3.5 Immunotherapy
 

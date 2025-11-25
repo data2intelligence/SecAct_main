@@ -1,12 +1,14 @@
 source("Secretome_s0_path.R")
+library(SecAct)
+library(SpaCET)
 library(Seurat)
 library(ggplot2)
 library(patchwork)
-library(SpaCET)
-library(SecAct)
 
-inputPath <- paste0(dataAppPath,"CosMx/")
-outputPath <- paste0(applicationPath,"LIHC/")
+
+inputPath <- paste0(dataAppPath,"ST_CosMx_LIHC/")
+outputPath <- paste0(applicationPath,"ST_LIHC/")
+
 sampleName <- "CancerousLiver"
 
 load(paste0(inputPath,"/LIHC_CosMx_data.rda"))
@@ -50,10 +52,11 @@ p <- SpaCET.visualize.spatialFeature(
   pointSize = 0.6
 )
 ggsave(paste0(outputPath,"/CosMx_",sampleName,"_cellType.png"), p, width = 13, height = 13, dpi=500, units = "cm")
+write.csv(metaData[,1,drop=FALSE],paste0(outputPath,"/CosMx_",sampleName,"_cellType.csv"), quote=FALSE)
 
 
 
-Sys.time()
+t1 <- Sys.time()
 
 SpaCET_obj <- SecAct.activity.inference.ST(
     inputProfile=SpaCET_obj,
@@ -61,8 +64,8 @@ SpaCET_obj <- SecAct.activity.inference.ST(
     sigFilter=TRUE
 )
 
-Sys.time()
-
+t2<- Sys.time()
+print(t2-t1)
 
 
 SpaCET_obj <- SecAct.CCC.scST(
@@ -83,7 +86,7 @@ saveRDS(SpaCET_obj, file = paste0(outputPath,"/CosMx_",sampleName,"_SpaCET_obj.r
 
 
 
-SpaCET_obj <- readRDS(paste0(outputPath,"/CosMx_",sampleName,"_SpaCET_obj.rds"))
+#SpaCET_obj <- readRDS(paste0(outputPath,"/CosMx_",sampleName,"_SpaCET_obj.rds"))
 
 
 png(paste0(outputPath,"/CosMx_",sampleName,"_heatmap.png"), width = 15, height = 15, res=500, units = "cm")
@@ -139,7 +142,7 @@ writeLines(olp, paste0(outputPath,"/olp.csv"))
 
 
 
-Xfile<- file.path(system.file(package = "SecAct"), "extdata/SecAct.tsv.gz")
+Xfile <- file.path(system.file(package = "SecAct"), "extdata/SecAct.tsv.gz")
 X <- read.table(Xfile,sep="\t",check.names=F)
 no0 <- ncol(X)
 
@@ -193,42 +196,4 @@ ggsave(paste0(outputPath,"/CosMx_",sampleName,"_velocity.png"), p, width = 16, h
 
 
 
-# background
-# n_cellType <- length(unique(SpaCET_obj@input$metaData[,1]))
-# n_secretedProtein <- nrow(SpaCET_obj@results$SecAct_output$ SecretedProteinActivity$ zscore)
-# no0 <- n_cellType * (n_cellType-1) * n_secretedProtein
 
-spacia <- read.csv("/data/Jiang_Lab/Data/Seongyong/spacia/aggregated_results_long.csv")
-rownames(spacia) <- paste0(spacia[,1],"_",spacia[,3],"_",spacia[,2])
-dim(spacia)
-spacia[,"protein"] <- transferSymbol(spacia[,"protein"])
-
-no0 <- nrow(spacia)
-
-spacia <- spacia[spacia[,"fdr"]<0.01&spacia[,"beta"]>0,]
-dim(spacia)
-
-secact_specific <- setdiff(rownames(ccc), rownames(spacia))
-spacia_specific <- setdiff(rownames(spacia), rownames(ccc))
-olp <- intersect(rownames(ccc), rownames(spacia))
-length(olp)
-
-no1 <- length(secact_specific)
-no2 <- length(olp)
-no3 <- length(spacia_specific)
-
-p <- phyper(length(olp),nrow(ccc),no0-nrow(ccc),nrow(spacia),FALSE)
-
-hyperTest <- c(
-	paste0("secact_specific ", no1), 
-	paste0("olp ", no2), 
-	paste0("spacia_specific ", no3),  
-	paste0("p.value ", p)  
-)
-hyperTest
-
-writeLines(hyperTest, paste0(outputPath,"/hyperTest_secact_spacia.txt"))
-
-
-Fibroblast_LGALS1_Macrophage
-[104] "Tumor_core_CCL5_Macrophage"           

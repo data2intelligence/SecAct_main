@@ -445,9 +445,23 @@ p2 <- ggplot(comb.m,aes(x = Group, y = value, colour=Group))+
 	)+facet_wrap(~ cancer, ncol =11) #scales = "free"
 
 ggsave(paste0(fig1Path, "QC0_pt16_allCancerType_SPs.png"), p2, width = 55, height = 23, dpi=200, units = "cm", limitsize = FALSE)
+
 write.csv(comb.m,paste0(fig1Path, "QC0_pt16_allCancerType_SPs.csv"),quote=F)
 
-		
+comb.m[,4] <- round(comb.m[,4],3)
+
+
+mat = reshape2::dcast( comb.m[comb.m[,"Group"]=="Random", ], cancer~gene )
+rownames(mat) <- mat[,1]
+mat <- t(mat[,-1])
+
+write.csv(mat,paste0(fig1Path, "QC0_pt16_allCancerType_SPs_Random.csv"),quote=F)
+
+mat = reshape2::dcast( comb.m[comb.m[,"Group"]=="Real", ], cancer~gene )
+rownames(mat) <- mat[,1]
+mat <- t(mat[,-1])
+
+write.csv(mat,paste0(fig1Path, "QC0_pt16_allCancerType_SPs_Real.csv"),quote=F)
 
 
 ###########
@@ -646,5 +660,23 @@ p2 <- ggplot(comb.m,aes(x = Group, y = value))+
 	) + facet_wrap(~ Var2, ncol =11) #scales = "free"
 	
 ggsave(paste0(fig1Path,"QC2_all_SPs_vs_IPs.png"), p2, width = 55, height = 23, dpi=200, units = "cm", limitsize = FALSE)
-write.csv(comb.m,paste0(fig1Path, "QC2_all_SPs_vs_IPs.csv"),quote=F)
+
+
+comb.m[,3] <- round(comb.m[,3],3)
+
+mat = reshape2::dcast( comb.m , Var2~Var1 )
+rownames(mat) <- mat[,1]
+mat <- t(mat[,-1])
+
+write.csv(mat,paste0(fig1Path, "QC2_all_SPs_vs_IPs.csv"),quote=F)
+
+
+comb.m[,"flag"] <- 1
+comb.m <- comb.m[,c("Var1","Group","flag")]
+mat = reshape2::dcast( comb.m , Group~Var1)
+rownames(mat) <- mat[,1]
+mat <- t(mat[,-1])
+
+mat[mat>0] <- 1
+write.csv(mat[,2,drop=FALSE],paste0(fig1Path, "QC2_all_SPs_vs_IPs_anno.csv"),quote=F)
 

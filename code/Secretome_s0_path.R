@@ -1,49 +1,49 @@
-dataPath <- "/data/rub2/project/Secretome/data/"
-resultsPath <- "/data/rub2/project/Secretome/results/"
+rawPath <- "../_raw/"
+dataPath <- "../data/"
+resultsPath <- "../results/"
 
 dataCrePath <- paste0(dataPath, "1_Creation/")
 dataValPath <- paste0(dataPath, "2_Validation/")
 dataAppPath <- paste0(dataPath, "3_Application/")
 
-finalSignaturesPath <- paste0(dataCrePath, "Signatures/")
-
 TSTAPath <- paste0(dataCrePath, "TSTA/")
+visiumPath <- paste0(dataCrePath, "TSTA/data/")
+meta <- read.csv(paste0(dataCrePath,"TSTA/meta.csv"),row.names=1)
+
+HPAPath <- paste0(dataCrePath, "HPA/")
+load(paste0(HPAPath,"HPA_20230612_gene_location.RData"))
+
 NCBIPath <- paste0(dataCrePath, "NCBI/")
 TCGAPath <- paste0(dataCrePath, "TCGA/")
 ICGCPath <- paste0(dataCrePath, "ICGC/")
-HPAPath <- paste0(dataCrePath, "HPA/")
 GEOPath <- paste0(dataCrePath, "GEO/")
+finalSignaturesPath <- paste0(dataCrePath, "Signatures/")
 
-visiumPath <- paste0(dataCrePath, "TSTA/data/")
+data_MSigDB_path <- paste0(dataAppPath, "MSigDB/")
 
-meta <- read.csv(paste0(dataCrePath,"TSTA/meta.csv"),row.names=1)
-load(paste0(HPAPath,"HPA_20230612_gene_location.RData"))
+fig1Path <- paste0(resultsPath,"fig1/")
+deconvResPath <- paste0(resultsPath,"preprocessDataDeconv/")
+
+preprocessDataStatPath <- paste0(resultsPath,"preprocessDataStat/")
+preprocessDataSummaryPath <- paste0(resultsPath,"preprocessDataSummary/")
+
+signaturePath <- paste0(resultsPath,"signature/")
+signatureCombPath <- paste0(resultsPath,"signatureComb/")
+signatureComparePath <- paste0(resultsPath,"signatureCompare/")
+
+QCPath <- paste0(resultsPath,"QC/")
+QCFilterPath <- paste0(resultsPath,"QCFilter/")
+QCSummaryPath <- paste0(resultsPath,"QCSummary/")
+
+lambdaPath <- paste0(resultsPath,"lambda/")
+lambdaSummaryPath <- paste0(resultsPath,"lambdaSummary/")
+
+validationPath <- paste0(resultsPath,"validation/")
+applicationPath <- paste0(resultsPath,"application/")
 
 rawDataPath <- "../_raw/ST/"
 
-fig1Path <- "../results/fig1/"
-deconvResPath <- "../results/preprocessDataDeconv/"
 
-preprocessDataStatPath <- "../results/preprocessDataStat/"
-preprocessDataSummaryPath <- "../results/preprocessDataSummary/"
-
-signaturePath <- "../results/signature/"
-signatureCombPath <- "../results/signatureComb/"
-signatureComparePath <- "../results/signatureCompare/"
-
-QCPath <- "../results/QC/"
-QCFilterPath <- "../results/QCFilter/"
-QCSummaryPath <- "../results/QCSummary/"
-
-lambdaPath <- "../results/lambda/"
-lambdaSummaryPath <- "../results/lambdaSummary/"
-
-validationPath <- "../results/validation/"
-applicationPath <- "../results/application/"
-predictionPath <- "../results/application/prediction/"
-
-MSigDBPath <- "../results/MSigDB/"
-MSigDB_genePath <- "../results/MSigDB_gene/"
 
 lambdas <- c(10000,50000,100000,500000,1000000,5000000,10000000)
 

@@ -44,6 +44,8 @@ names(topcancers) <- c("Breast","Pancreatic","Glioblastoma","Colorectal","Lung-A
 
 cancersFromPRECOG <- c("PRAD","PDAC","LUAD")
 
+
+combcomb <- data.frame()
 for(topcancer in topcancers)
 {
 	if(!topcancer%in%cancersFromPRECOG)
@@ -117,6 +119,7 @@ for(topcancer in topcancers)
 		comb.sameSPs <- comb.sameSPs[comb.sameSPs[,"gene"]%in%genes,]
 		comb <- rbind(comb,comb.sameSPs)
 	}
+	combcomb <- rbind(combcomb,comb)
 	
 	comb[,"sig"] <- factor(comb[,"sig"], levels=names(sigs))
 	
@@ -150,6 +153,11 @@ for(topcancer in topcancers)
 		
 	ggsave(paste0(signatureCombPath,"cancer_specific_",topcancer,".png"), p2, width = 5*length(cancers) + 1, height = 8.2, dpi=200, units = "cm", limitsize = FALSE)
 }
+
+
+combcomb[,4] <- round(combcomb[,4],3)
+write.csv(combcomb, paste0(signatureCombPath,"cancer_specific_combcomb.csv"), quote=F)
+
 
 
 
