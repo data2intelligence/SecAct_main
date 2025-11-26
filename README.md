@@ -85,7 +85,7 @@ Validation using various data sets (Fig. 3 and Extended Fig. 4~5).
 ## 3. Downstream application
 
 SecAct could be to spatial, single-cell, and bulk transcriptomics data
-(Fig. 4~6 and Extended Fig. 6~10).
+(Fig. 4,5,6 and Extended Fig. 6~10).
 
 #### 3.1 HCC Visium
 
